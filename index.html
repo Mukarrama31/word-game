@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Hustle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap"rel="stylesheet">
+    <link rel="stylesheet" href="./assets/style/reset.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,500;6..12,600;6..12,700&display=swap"> 
+    <link rel="stylesheet" href="./assets/style/index.css">
+    <script src="./assets/script/index.js" defer></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="music-controls">
+            <audio id="backgroundMusic" src="./assets/sound/music-file.mp3" loop></audio>
+            <button class="playMusicBtn">Play Music</button>
+            <button class="stopMusicBtn">Stop Music</button>
+            <div class="scoreboard-container">
+                <h2>Top 9 Scores:</h2>
+                <ul class="scoreboard"></ul>
+            </div><br>
+            <button class="clearScoresBtn">Clear Scores</button>
+            </div>
+            <div class="game">
+            <h1>Word Hustle</h1>
+            <p><span class="time">99</span> <span class="seconds">s</span></p>
+            <p class="word"></p>
+            <input type="text" class="userInput" placeholder="Type here..." disabled>
+            <p class="score">Score: <span class="currentScore">0</span></p>
+            <button class="startBtn">Start</button>
+            <button class="resetBtn">Reset</button>
+            <button class="stopBtn">Stop</button>
+            </div>
+        </div>
+        <div class="container">
+            <h1>Word Game</h1>
+            <img src="assets/img1.gif" alt="Background Image" class="background-image">
+            <div class="game">
+              <p><span class="time">100</span> seconds</p>
+              <p class="word"></p>
+              <input type="text" class="userInput" placeholder="Type here..." disabled>
+              <p class="score">Score: <span class="currentScore">0</span></p>
+              <button class="startBtn">Start</button>
+              <button class="restartBtn">Restart</button>
+              <button class="stopBtn">Stop</button>
+              <button class="playMusicBtn">Play Music</button>
+              <button class="stopMusicBtn">Stop Music</button>
+            </div>
+            <div class="scoreboard-container"></div>
+          </div>
+    </body>
+</html>
