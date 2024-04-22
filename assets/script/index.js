@@ -28,8 +28,13 @@ let timerInterval;
 let totalAttempts = 0;
 let correctAttempts = 0;
 let totalIncorrect = 0;
+let incorrectAttempts = 0;
 let tInc=0;
+let totalKeystrokes = 0;
+let backspaceClicks = 0;
 
+//function that initializes the game
+//listens to an input and then starts the match with startMatch function.
 function init() {
     showWord();
     timerInterval = setInterval(updateTime, 1000);
@@ -37,23 +42,28 @@ function init() {
     
     userInput.addEventListener('keydown', function(event) {
         if (event.key === ' ') {
-            event.preventDefault(); // Prevent default space behavior (scrolling down)
+            event.preventDefault(); // Prevent default space behavior
             startMatch(event);
         }
     });
 }
 
+//plays music
 const playMusicBtn = document.querySelector('.playMusicBtn');
 playMusicBtn.addEventListener('click', function() {
     backgroundMusic.play();
 });
 
+//stops music
 const stopMusicBtn = document.querySelector('.stopMusicBtn');
 stopMusicBtn.addEventListener('click', function() {
     backgroundMusic.pause();
     backgroundMusic.currentTime = 0;
 });
 
+//this function starts the game
+//if the game is not playing then the restart button is hidden, time set to 100s
+//also if not playing, the user input is set to block
 function startGame() {
     if (!isPlaying) {
         isPlaying = true;
@@ -74,6 +84,7 @@ function startGame() {
     }
 }
 
+// totalKeystrokes are reset and backspaceClicks in restartGame function
 function restartGame() {
     score = 0;
     scoreElement.textContent = score;
@@ -86,12 +97,14 @@ function restartGame() {
     startBtn.style.display = 'inline-block';
     stopBtn.style.display = 'none';
     wordElement.textContent = '';
-    correctAttempts = 0; // Reset correctAttempts
-    totalAttempts = 0; // Reset totalAttempts
-    totalIncorrect = 0; // Reset totalIncorrect
+    totalKeystrokes = 0; 
+    backspaceClicks = 0; 
+    totalAttempts = 0; 
     tInc=0;
 }
 
+//this function runs when game ends
+//then the stop button is removed and start button is displayed
 function stopGame() {
     isPlaying = false;
     clearInterval(timerInterval);
@@ -134,25 +147,26 @@ function showWord() {
     wordElement.textContent = words[wordIndex];
 }
 
+// Inside startMatch function
 function startMatch(event) {
-    if (event.type === 'input' || event.key === ' ') {
-        if (event.key === ' ') {
-            event.preventDefault(); // Prevent default space behavior (scrolling down)
-            if (!isPlaying) return; // Don't start the game if it's not already playing
-            if (matchWords()) {
-                score++;
-                correctAttempts++; // Increment correctAttempts when the word is typed correctly
-            } else {
-                totalIncorrect++; // Increment totalIncorrect when the word is typed incorrectly
-               
-            }
-            totalAttempts++; // Increment totalAttempts on every spacebar press
-            scoreElement.textContent = score;
-            showWord();
-            userInput.value = '';
-        } else if (event.type === 'input' && userInput.value.toLowerCase() === wordElement.textContent.toLowerCase()) {
-            totalAttempts++; // Increment totalAttempts on correct input
-        }
+    if (!isPlaying) return; // Don't start the game if it's not already playing
+    
+    if (event.type === 'input' && userInput.value.toLowerCase() === wordElement.textContent.toLowerCase()) {
+        // If the input matches the word, increment score and move to the next word
+        score++;
+        totalKeystrokes++; 
+        totalAttempts++; 
+        scoreElement.textContent = score;
+        showWord();
+        userInput.value = '';
+    } else if (event.type === 'input') {
+        // Increment totalKeystrokes for any input
+        totalKeystrokes++;
+    }
+
+    if (event.key === 'Backspace') {
+        // If backspace key is pressed, backspaceClicks isincremented 
+        backspaceClicks++;
     }
 }
 
@@ -176,11 +190,18 @@ function clearScores() {
     displayScoreboard(); // Clear the displayed scoreboard as well
 }
 
+// Update saveScore function to calculate accuracy
 function saveScore(newScore) {
     let scores = JSON.parse(localStorage.getItem('wordHustleScores')) || [];
-    const percentage = ((correctAttempts / totalAttempts) * 100).toFixed(1) + '%'; // Calculate percentage
+    
+    // correctAttempts is calculated using totalKeystrokes minus backspaceClicks
+    const correctAttempts = totalKeystrokes - backspaceClicks;
+    
+    // Calculate accuracy percentage
+    const accuracy = correctAttempts / totalKeystrokes * 100;
+    const percentage = isNaN(accuracy) ? '0%' : accuracy.toFixed(1) + '%';
 
-    scores.push({ score: `${newScore}`, percentage, attempts: totalAttempts, correct: correctAttempts, incorrect: totalIncorrect });
+    scores.push({ score: `${newScore}`, percentage, attempts: totalKeystrokes, correct: correctAttempts, incorrect: backspaceClicks });
     scores.sort((a, b) => {
         let scoreA, scoreB;
         if (typeof a.score === 'string') {
@@ -197,8 +218,9 @@ function saveScore(newScore) {
     }); // Sorting scores in descending order
     scores.splice(MAX_SCORES); // only maximum scores are stored and displayed
     localStorage.setItem('wordHustleScores', JSON.stringify(scores));
-    displayScoreboard(); // Call the displayScoreboard function after saving the score
+    displayScoreboard(); 
 }
+
 function displayScoreboard() {
     scoreboardContainer.innerHTML = '';
     let scores = JSON.parse(localStorage.getItem('wordHustleScores')) || [];
